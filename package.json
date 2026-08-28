@@ -1,0 +1,45 @@
+{
+  "name": "parmitalia-management-desktop",
+  "version": "1.0.0",
+  "description": "Parmitalia Management System desktop per Windows e macOS",
+  "main": "main.js",
+  "author": "Parmitalia Distribution SRL",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win nsis portable",
+    "dist:mac": "electron-builder --mac dmg zip",
+    "dist": "electron-builder --win nsis portable --mac dmg zip"
+  },
+  "devDependencies": {
+    "electron": "^39.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "ro.parmitalia.management",
+    "productName": "Parmitalia Management System",
+    "asar": true,
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.business"
+    }
+  }
+}

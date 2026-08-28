@@ -1,0 +1,22 @@
+PARMITALIA MANAGEMENT SYSTEM - PACCHETTO AGGIORNATO
+
+WINDOWS
+1. Estrarre lo ZIP in una cartella.
+2. Aprire la cartella parmitalia-desktop.
+3. Fare doppio clic su INSTALLA_WINDOWS.cmd.
+4. Sul Desktop verra creato "Parmitalia Management System.cmd".
+
+macOS
+1. Estrarre lo ZIP.
+2. Aprire la cartella parmitalia-desktop.
+3. Fare clic destro su INSTALLA_macOS.command, poi Apri.
+4. Sul Desktop verra creato "Parmitalia Management System.command".
+
+NOTE
+- Il gestionale funziona anche senza server, salvando i dati nel browser/app locale.
+- Se Electron e le dipendenze npm sono installate, si possono creare installer nativi con:
+  npm install
+  npm run dist:win
+  npm run dist:mac
+- Su Windows si puo generare .exe/portable; su macOS .dmg/.zip deve essere generato su Mac.
+- La scrittura IA avanzata richiede OPENAI_API_KEY nell'ambiente o configurazione sessione nel gestionale.
