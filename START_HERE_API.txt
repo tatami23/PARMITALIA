@@ -1,0 +1,18 @@
+PARMITALIA PRIVATE API - START HERE
+
+1. Double-click:
+   START_PRIVATE_API.cmd
+
+2. Keep the black window open.
+
+3. Open this link:
+   http://127.0.0.1:8000/api/summary
+
+This is only a private local test link for this PC.
+It is not yet the employee internet link.
+
+The script now creates the database automatically from:
+C:\Users\Lenovo i3\AppData\Roaming\parmitalia-management-desktop\parmitalia-state.json
+
+The central test database is stored here:
+backend\data\parmitalia-central.sqlite3

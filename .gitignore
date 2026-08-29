@@ -8,3 +8,18 @@ __pycache__/
 .DS_Store
 Thumbs.db
 app/*.backup-*
+backend/.venv/
+backend/data/*.sqlite3
+backend/data/*.sqlite3-*
+backend/data/seed/*.json
+
+# Python generated files
+__pycache__/
+*.pyc
+
+# PARMITALIA backend local/business data
+backend/data/*.sqlite3
+backend/data/*.sqlite3-shm
+backend/data/*.sqlite3-wal
+backend/data/*.sqlite3.sqlite3
+backend/data/seed/*.json
