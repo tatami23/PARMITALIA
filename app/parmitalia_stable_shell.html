@@ -1,0 +1,854 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Parmitalia Management System</title>
+  <style>
+    :root {
+      --bg: #eef3f0;
+      --panel: #ffffff;
+      --line: #d8e2dc;
+      --text: #18221d;
+      --muted: #65736b;
+      --accent: #1f7a4d;
+      --accent-2: #0d5f7a;
+      --danger: #a83232;
+      --soft: #f7faf8;
+      --shadow: 0 16px 40px rgba(25, 42, 34, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100%; margin: 0; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      overflow: hidden;
+    }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 7px;
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+    button:hover { border-color: #9db9aa; }
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 700;
+    }
+    button.danger {
+      background: #fff4f4;
+      border-color: #e7b1b1;
+      color: var(--danger);
+    }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 9px 10px;
+      background: #fff;
+      color: var(--text);
+      min-width: 0;
+    }
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .hidden { display: none !important; }
+    .login {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #eef3f0 0%, #f7faf8 50%, #e8f0f5 100%);
+      padding: 24px;
+    }
+    .login-box {
+      width: min(430px, 100%);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+    .login-title {
+      margin: 0 0 6px;
+      font-size: 26px;
+      line-height: 1.15;
+    }
+    .login-sub {
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      margin: 0 0 6px;
+      color: #33433a;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .error {
+      min-height: 20px;
+      color: var(--danger);
+      font-weight: 700;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    .app {
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 286px minmax(0, 1fr);
+      background: var(--bg);
+    }
+    .side {
+      background: #17251e;
+      color: #eef8f1;
+      border-right: 1px solid #0f1b15;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 0;
+    }
+    .brand {
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .brand strong {
+      display: block;
+      font-size: 19px;
+      line-height: 1.15;
+    }
+    .brand span {
+      display: block;
+      margin-top: 5px;
+      color: #b9cdc1;
+      font-size: 12px;
+    }
+    .nav {
+      overflow: auto;
+      padding: 12px;
+    }
+    .nav button {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      border-color: transparent;
+      color: #eaf6ee;
+      text-align: left;
+      padding: 9px;
+      margin-bottom: 4px;
+    }
+    .nav button:hover, .nav button.active {
+      background: rgba(255,255,255,.1);
+      border-color: rgba(255,255,255,.12);
+    }
+    .code {
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      background: rgba(255,255,255,.13);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .count {
+      color: #cfe2d5;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .side-foot {
+      padding: 12px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+    .side-foot button {
+      width: 100%;
+      color: #fff;
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.12);
+    }
+    .main {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .top {
+      background: rgba(255,255,255,.92);
+      border-bottom: 1px solid var(--line);
+      padding: 13px 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+    }
+    .title h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+    .title p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .status {
+      min-width: 170px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+    }
+    .work {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      gap: 12px;
+      padding: 12px;
+    }
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .panel-head {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      background: var(--soft);
+    }
+    .search-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .table-wrap {
+      overflow: auto;
+      min-height: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    th, td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #eef2ef;
+      text-align: left;
+      vertical-align: top;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #f3f7f4;
+      color: #34443a;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    tr { cursor: pointer; }
+    tr:hover td, tr.selected td { background: #eef7f1; }
+    .empty {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      padding: 30px;
+      text-align: center;
+    }
+    .detail {
+      min-width: 0;
+      min-height: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+    .detail-head {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--soft);
+    }
+    .detail-head h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+    .detail-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .form {
+      overflow: auto;
+      padding: 12px;
+      min-height: 0;
+    }
+    .detail-actions {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      border-top: 1px solid var(--line);
+      justify-content: flex-end;
+      background: var(--soft);
+    }
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: #17251e;
+      color: #fff;
+      padding: 11px 14px;
+      border-radius: 7px;
+      box-shadow: var(--shadow);
+      max-width: 420px;
+      z-index: 1000;
+    }
+    @media (max-width: 1050px) {
+      .app { grid-template-columns: 86px minmax(0, 1fr); }
+      .brand strong, .brand span, .nav .label, .count { display: none; }
+      .nav button { grid-template-columns: 1fr; }
+      .work { grid-template-columns: 1fr; }
+      .detail { min-height: 360px; }
+    }
+  </style>
+</head>
+<body>
+  <section id="login" class="login">
+    <form id="login-form" class="login-box">
+      <h1 class="login-title">Parmitalia Management System</h1>
+      <p class="login-sub">Accesso al gestionale</p>
+      <div class="field">
+        <label for="user-select">Utente</label>
+        <select id="user-select"></select>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" value="demo">
+      </div>
+      <button class="primary" type="submit">Entra</button>
+      <div id="login-error" class="error"></div>
+    </form>
+  </section>
+
+  <section id="app" class="app hidden">
+    <aside class="side">
+      <div class="brand">
+        <strong>Parmitalia</strong>
+        <span id="active-user">Sistema gestionale</span>
+      </div>
+      <nav id="nav" class="nav"></nav>
+      <div class="side-foot">
+        <button id="logout" type="button">Esci</button>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="top">
+        <div class="title">
+          <h1 id="module-title">Ordini</h1>
+          <p id="module-subtitle">Archivio operativo</p>
+        </div>
+        <div class="actions">
+          <div id="save-status" class="status">Archivio in caricamento</div>
+          <button id="export-json" type="button">Esporta</button>
+          <button id="print-view" type="button">Stampa PDF</button>
+          <button id="save-now" class="primary" type="button">Salva</button>
+        </div>
+      </header>
+      <section class="work">
+        <section class="panel">
+          <div class="panel-head">
+            <div class="search-wrap">
+              <input id="search" type="search" placeholder="Cerca nel modulo">
+              <button id="clear-search" type="button">Annulla</button>
+            </div>
+            <button id="add-record" class="primary" type="button">Nuovo</button>
+          </div>
+          <div id="table-wrap" class="table-wrap"></div>
+        </section>
+        <aside class="detail">
+          <div class="detail-head">
+            <h2 id="detail-title">Scheda</h2>
+            <p id="detail-subtitle">Seleziona una riga per modificare i dati.</p>
+          </div>
+          <form id="detail-form" class="form"></form>
+          <div class="detail-actions">
+            <button id="delete-record" class="danger" type="button">Elimina</button>
+            <button id="duplicate-record" type="button">Duplica</button>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </section>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var MODULES = [
+        { key: "orders", code: "ORD", title: "Ordini", subtitle: "Ordini, prezzi, destinazioni e stato operativo" },
+        { key: "negotiations", code: "TRT", title: "Trattative", subtitle: "Trattative in corso e storico commerciale" },
+        { key: "contacts", code: "CNT", title: "Contatti", subtitle: "Clienti, fornitori e referenti" },
+        { key: "products", code: "PRD", title: "Prodotti", subtitle: "Anagrafiche articoli e specifiche" },
+        { key: "supplierPriceConfirmations", code: "PRZ", title: "Conferme prezzi", subtitle: "Listini e conferme fornitori" },
+        { key: "offers", code: "OFF", title: "Offerte", subtitle: "Offerte commerciali salvate" },
+        { key: "intermediations", code: "INT", title: "Intermediazioni", subtitle: "Pratiche di mediazione e commissioni" },
+        { key: "documents", code: "DOC", title: "Documenti", subtitle: "Archivio documentale" },
+        { key: "tasks", code: "TSK", title: "Attivita", subtitle: "Scadenze e lavoro operativo" },
+        { key: "dashboardAgenda", code: "AGD", title: "Agenda", subtitle: "Impegni e appuntamenti" },
+        { key: "marketTrends", code: "MRK", title: "Mercato", subtitle: "Andamenti e fonti CLAL" },
+        { key: "contracts", code: "CTR", title: "Contratti", subtitle: "Contratti e modelli collegati" },
+        { key: "payments", code: "PAY", title: "Pagamenti", subtitle: "Pagamenti e incassi" },
+        { key: "foreignRecruiting", code: "REC", title: "Recruiting estero", subtitle: "Candidati e pratiche estere" },
+        { key: "foreignEmployees", code: "EST", title: "Dipendenti esteri", subtitle: "Documenti e stato lavoratori" },
+        { key: "driverRecruitingCandidates", code: "DRV", title: "Autisti", subtitle: "Candidati autisti e campagne" },
+        { key: "communications", code: "COM", title: "Comunicazioni", subtitle: "Email, note e contatti operativi" },
+        { key: "banks", code: "BNK", title: "Banche", subtitle: "Coordinate bancarie" },
+        { key: "agents", code: "AGE", title: "Agenti", subtitle: "Agenti e zone" }
+      ];
+
+      var state = {};
+      var currentKey = "orders";
+      var selectedIndex = -1;
+      var currentUser = null;
+      var dirtyTimer = null;
+      var booted = false;
+
+      var el = {
+        login: document.getElementById("login"),
+        app: document.getElementById("app"),
+        loginForm: document.getElementById("login-form"),
+        userSelect: document.getElementById("user-select"),
+        password: document.getElementById("password"),
+        loginError: document.getElementById("login-error"),
+        activeUser: document.getElementById("active-user"),
+        nav: document.getElementById("nav"),
+        moduleTitle: document.getElementById("module-title"),
+        moduleSubtitle: document.getElementById("module-subtitle"),
+        saveStatus: document.getElementById("save-status"),
+        exportJson: document.getElementById("export-json"),
+        printView: document.getElementById("print-view"),
+        saveNow: document.getElementById("save-now"),
+        search: document.getElementById("search"),
+        clearSearch: document.getElementById("clear-search"),
+        addRecord: document.getElementById("add-record"),
+        tableWrap: document.getElementById("table-wrap"),
+        detailTitle: document.getElementById("detail-title"),
+        detailSubtitle: document.getElementById("detail-subtitle"),
+        detailForm: document.getElementById("detail-form"),
+        deleteRecord: document.getElementById("delete-record"),
+        duplicateRecord: document.getElementById("duplicate-record"),
+        logout: document.getElementById("logout"),
+        toast: document.getElementById("toast")
+      };
+
+      function fallbackUsers() {
+        return [
+          { id: "USR-001", name: "Carlo", username: "carlo", role: "admin", password: "demo" },
+          { id: "USR-002", name: "Assistente", username: "assistente", role: "assistant", password: "demo" },
+          { id: "USR-REC-001", name: "Recruiter", username: "recruiter", role: "recruiter", password: "demo" }
+        ];
+      }
+
+      function text(value) {
+        if (value === null || value === undefined) return "";
+        if (typeof value === "object") return JSON.stringify(value);
+        return String(value);
+      }
+
+      function escapeHtml(value) {
+        return text(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function labelize(key) {
+        return String(key || "")
+          .replace(/([A-Z])/g, " $1")
+          .replace(/[_-]+/g, " ")
+          .replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+      }
+
+      function nowIso() {
+        return new Date().toISOString();
+      }
+
+      function getModule() {
+        return MODULES.find(function (item) { return item.key === currentKey; }) || MODULES[0];
+      }
+
+      function getRecords() {
+        if (!Array.isArray(state[currentKey])) state[currentKey] = [];
+        return state[currentKey];
+      }
+
+      function primaryValue(record) {
+        var keys = ["name", "company", "client", "customer", "supplier", "product", "title", "subject", "code", "id"];
+        for (var i = 0; i < keys.length; i += 1) {
+          if (record && record[keys[i]]) return text(record[keys[i]]);
+        }
+        return record && record.id ? text(record.id) : "Scheda";
+      }
+
+      function preferredColumns(records) {
+        var priority = ["id", "date", "createdAt", "name", "company", "client", "customer", "supplier", "product", "description", "status", "country", "email", "phone", "price", "quantity", "amount", "currency", "notes"];
+        var seen = {};
+        var result = [];
+        priority.forEach(function (key) {
+          if (records.some(function (record) { return Object.prototype.hasOwnProperty.call(record || {}, key); })) {
+            seen[key] = true;
+            result.push(key);
+          }
+        });
+        records.slice(0, 20).forEach(function (record) {
+          Object.keys(record || {}).forEach(function (key) {
+            if (!seen[key] && result.length < 8 && typeof record[key] !== "object") {
+              seen[key] = true;
+              result.push(key);
+            }
+          });
+        });
+        if (!result.length) result.push("id", "name", "status");
+        return result.slice(0, 8);
+      }
+
+      function matchesSearch(record, query) {
+        if (!query) return true;
+        return text(record).toLowerCase().indexOf(query.toLowerCase()) !== -1;
+      }
+
+      function filteredRecords() {
+        var query = el.search.value.trim();
+        return getRecords().map(function (record, index) {
+          return { record: record, index: index };
+        }).filter(function (item) {
+          return matchesSearch(item.record, query);
+        });
+      }
+
+      function renderNav() {
+        el.nav.innerHTML = MODULES.map(function (item) {
+          var count = Array.isArray(state[item.key]) ? state[item.key].length : 0;
+          return '<button type="button" class="' + (item.key === currentKey ? "active" : "") + '" data-module="' + escapeHtml(item.key) + '">' +
+            '<span class="code">' + escapeHtml(item.code) + '</span>' +
+            '<span class="label">' + escapeHtml(item.title) + '</span>' +
+            '<span class="count">' + count + '</span>' +
+            '</button>';
+        }).join("");
+      }
+
+      function renderTable() {
+        var items = filteredRecords();
+        var records = getRecords();
+        var columns = preferredColumns(records);
+        if (!items.length) {
+          el.tableWrap.innerHTML = '<div class="empty">Nessuna scheda in questo modulo.</div>';
+          return;
+        }
+        el.tableWrap.innerHTML = '<table><thead><tr>' + columns.map(function (key) {
+          return '<th>' + escapeHtml(labelize(key)) + '</th>';
+        }).join("") + '</tr></thead><tbody>' + items.map(function (item) {
+          return '<tr data-index="' + item.index + '" class="' + (item.index === selectedIndex ? "selected" : "") + '">' +
+            columns.map(function (key) {
+              return '<td title="' + escapeHtml(item.record && item.record[key]) + '">' + escapeHtml(item.record && item.record[key]) + '</td>';
+            }).join("") +
+            '</tr>';
+        }).join("") + '</tbody></table>';
+      }
+
+      function parseValue(raw, previous) {
+        if (typeof previous === "number") {
+          var n = Number(String(raw).replace(",", "."));
+          return Number.isFinite(n) ? n : raw;
+        }
+        if (typeof previous === "boolean") return raw === "true" || raw === "Si" || raw === "Sì";
+        if (previous && typeof previous === "object") {
+          try { return JSON.parse(raw); } catch (_) { return raw; }
+        }
+        return raw;
+      }
+
+      function renderDetail() {
+        var records = getRecords();
+        var record = records[selectedIndex];
+        if (!record) {
+          el.detailTitle.textContent = "Scheda";
+          el.detailSubtitle.textContent = "Seleziona una riga per modificare i dati.";
+          el.detailForm.innerHTML = "";
+          el.deleteRecord.disabled = true;
+          el.duplicateRecord.disabled = true;
+          return;
+        }
+        el.deleteRecord.disabled = false;
+        el.duplicateRecord.disabled = false;
+        el.detailTitle.textContent = primaryValue(record);
+        el.detailSubtitle.textContent = record.id ? String(record.id) : getModule().title;
+        var keys = Object.keys(record);
+        if (!keys.includes("id")) keys.unshift("id");
+        el.detailForm.innerHTML = keys.map(function (key) {
+          var value = record[key];
+          var input = value && typeof value === "object"
+            ? '<textarea data-field="' + escapeHtml(key) + '">' + escapeHtml(JSON.stringify(value, null, 2)) + '</textarea>'
+            : '<input data-field="' + escapeHtml(key) + '" value="' + escapeHtml(value) + '">';
+          return '<div class="field"><label>' + escapeHtml(labelize(key)) + '</label>' + input + '</div>';
+        }).join("");
+      }
+
+      function renderModule() {
+        var module = getModule();
+        el.moduleTitle.textContent = module.title;
+        el.moduleSubtitle.textContent = module.subtitle;
+        if (selectedIndex < 0 && getRecords().length) selectedIndex = 0;
+        if (selectedIndex >= getRecords().length) selectedIndex = getRecords().length - 1;
+        renderNav();
+        renderTable();
+        renderDetail();
+      }
+
+      function setStatus(message) {
+        el.saveStatus.textContent = message;
+      }
+
+      function toast(message) {
+        el.toast.textContent = message;
+        el.toast.classList.remove("hidden");
+        clearTimeout(el.toast._timer);
+        el.toast._timer = setTimeout(function () { el.toast.classList.add("hidden"); }, 2800);
+      }
+
+      async function saveNow() {
+        state._pmsAutosave = {
+          updatedAt: nowIso(),
+          source: "parmitalia-stable-shell",
+          user: currentUser ? currentUser.username || currentUser.name || currentUser.id : ""
+        };
+        setStatus("Salvataggio...");
+        if (window.parmitaliaStorage && window.parmitaliaStorage.save) {
+          await window.parmitaliaStorage.save(state);
+        } else {
+          localStorage.setItem("parmitalia-state-fallback", JSON.stringify(state));
+        }
+        setStatus("Salvato " + new Date().toLocaleTimeString("it-IT"));
+      }
+
+      function scheduleSave() {
+        setStatus("Modifiche non salvate");
+        clearTimeout(dirtyTimer);
+        dirtyTimer = setTimeout(function () {
+          saveNow().catch(function (error) {
+            setStatus("Errore salvataggio");
+            toast(error.message || "Salvataggio non riuscito");
+          });
+        }, 700);
+      }
+
+      function newRecord() {
+        var module = getModule();
+        var records = getRecords();
+        var prefix = module.code || "REC";
+        var id = prefix + "-" + String(records.length + 1).padStart(3, "0");
+        var record = { id: id, name: "Nuova scheda", status: "Da fare", notes: "" };
+        records.unshift(record);
+        selectedIndex = 0;
+        renderModule();
+        scheduleSave();
+      }
+
+      function duplicateRecord() {
+        var records = getRecords();
+        var record = records[selectedIndex];
+        if (!record) return;
+        var copy = JSON.parse(JSON.stringify(record));
+        copy.id = (record.id || getModule().code || "REC") + "-COPY-" + Date.now().toString().slice(-5);
+        records.splice(selectedIndex + 1, 0, copy);
+        selectedIndex += 1;
+        renderModule();
+        scheduleSave();
+      }
+
+      function deleteRecord() {
+        var records = getRecords();
+        if (!records[selectedIndex]) return;
+        if (!confirm("Eliminare questa scheda?")) return;
+        records.splice(selectedIndex, 1);
+        if (selectedIndex >= records.length) selectedIndex = records.length - 1;
+        renderModule();
+        scheduleSave();
+      }
+
+      function exportJson() {
+        var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "parmitalia-backup-" + nowIso().replace(/[:.]/g, "-") + ".json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+      }
+
+      async function printView() {
+        var module = getModule();
+        var items = filteredRecords().map(function (item) { return item.record; });
+        var columns = preferredColumns(items);
+        var html = '<!doctype html><html><head><meta charset="utf-8"><title>' + escapeHtml(module.title) + '</title>' +
+          '<style>body{font-family:Segoe UI,Arial,sans-serif;color:#18221d}h1{font-size:22px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccd8d0;padding:6px;font-size:11px;text-align:left;vertical-align:top}th{background:#eef3f0}</style>' +
+          '</head><body><h1>' + escapeHtml(module.title) + '</h1><table><thead><tr>' +
+          columns.map(function (key) { return '<th>' + escapeHtml(labelize(key)) + '</th>'; }).join("") +
+          '</tr></thead><tbody>' + items.map(function (record) {
+            return '<tr>' + columns.map(function (key) { return '<td>' + escapeHtml(record[key]) + '</td>'; }).join("") + '</tr>';
+          }).join("") + '</tbody></table></body></html>';
+        if (window.parmitaliaPrint && window.parmitaliaPrint.toPdf) {
+          await window.parmitaliaPrint.toPdf({ title: module.title, html: html });
+          toast("PDF creato");
+        } else {
+          var popup = window.open("", "_blank");
+          popup.document.write(html);
+          popup.document.close();
+          popup.print();
+        }
+      }
+
+      async function loadState() {
+        var loaded = null;
+        if (window.parmitaliaStorage && window.parmitaliaStorage.load) {
+          loaded = await window.parmitaliaStorage.load();
+        }
+        if (!loaded) {
+          try { loaded = JSON.parse(localStorage.getItem("parmitalia-state-fallback") || "null"); } catch (_) {}
+        }
+        state = loaded && typeof loaded === "object" ? loaded : {};
+        if (!Array.isArray(state.users)) state.users = fallbackUsers();
+        MODULES.forEach(function (module) {
+          if (!Array.isArray(state[module.key])) state[module.key] = [];
+        });
+        populateUsers();
+        setStatus("Archivio caricato");
+        booted = true;
+      }
+
+      function populateUsers() {
+        var users = state.users && state.users.length ? state.users : fallbackUsers();
+        el.userSelect.innerHTML = users.map(function (user, index) {
+          var label = (user.name || user.username || user.email || user.id || ("Utente " + (index + 1))) + (user.role ? " - " + user.role : "");
+          return '<option value="' + index + '">' + escapeHtml(label) + '</option>';
+        }).join("");
+      }
+
+      function login(event) {
+        event.preventDefault();
+        var users = state.users && state.users.length ? state.users : fallbackUsers();
+        var user = users[Number(el.userSelect.value) || 0];
+        var expected = user && user.password ? String(user.password) : "demo";
+        if (expected && el.password.value !== expected) {
+          el.loginError.textContent = "Password non valida.";
+          return;
+        }
+        currentUser = user;
+        el.activeUser.textContent = (user.name || user.username || "Utente") + " - " + (user.role || "operativo");
+        el.login.classList.add("hidden");
+        el.app.classList.remove("hidden");
+        renderModule();
+        setTimeout(function () { el.search.focus(); }, 50);
+      }
+
+      el.loginForm.addEventListener("submit", login);
+      el.nav.addEventListener("click", function (event) {
+        var button = event.target.closest("button[data-module]");
+        if (!button) return;
+        currentKey = button.getAttribute("data-module");
+        selectedIndex = -1;
+        el.search.value = "";
+        renderModule();
+      });
+      el.tableWrap.addEventListener("click", function (event) {
+        var row = event.target.closest("tr[data-index]");
+        if (!row) return;
+        selectedIndex = Number(row.getAttribute("data-index"));
+        renderModule();
+      });
+      el.detailForm.addEventListener("input", function (event) {
+        var field = event.target.getAttribute("data-field");
+        var records = getRecords();
+        var record = records[selectedIndex];
+        if (!field || !record) return;
+        record[field] = parseValue(event.target.value, record[field]);
+        renderTable();
+        el.detailTitle.textContent = primaryValue(record);
+        scheduleSave();
+      });
+      el.search.addEventListener("input", renderTable);
+      el.clearSearch.addEventListener("click", function () {
+        el.search.value = "";
+        renderTable();
+        el.search.focus();
+      });
+      el.addRecord.addEventListener("click", newRecord);
+      el.duplicateRecord.addEventListener("click", duplicateRecord);
+      el.deleteRecord.addEventListener("click", deleteRecord);
+      el.exportJson.addEventListener("click", exportJson);
+      el.printView.addEventListener("click", function () {
+        printView().catch(function (error) { toast(error.message || "Stampa non riuscita"); });
+      });
+      el.saveNow.addEventListener("click", function () {
+        saveNow().then(function () { toast("Archivio salvato"); }).catch(function (error) { toast(error.message || "Salvataggio non riuscito"); });
+      });
+      el.logout.addEventListener("click", function () {
+        currentUser = null;
+        el.app.classList.add("hidden");
+        el.login.classList.remove("hidden");
+        el.password.focus();
+      });
+
+      window.addEventListener("beforeunload", function () {
+        if (booted) saveNow().catch(function () {});
+      });
+
+      loadState().catch(function (error) {
+        el.loginError.textContent = "Archivio non caricato: " + (error.message || error);
+        state = { users: fallbackUsers() };
+        populateUsers();
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -15,7 +15,7 @@
     ["approvals","APP","Autorizzazioni Admin"],
     ["orders","ORD","Ordini"],
     ["products","PRD","Prodotti e articoli"],
-    ["productForms","FRM","Moduli prodotto"],
+    ["productForms","FRM","Moduli"],
     ["supplierPriceConfirmations","LST","Listini e conferme fornitori"],
     ["tenders","TEN","Gare e richieste"],
     ["commercialBrokerage","BRK","Brokeraggio commerciale"],
@@ -124,13 +124,23 @@
     const host = ensureHost();
     if (!host) return;
     const page = cur().page || "dashboard";
-    host.innerHTML = visible().map(x => {
+    const nextHtml = visible().map(x => {
       const active = x[0] === page ? " active" : "";
       return '<button type="button" class="pms143-button' + active + '" data-pms143-page="' + esc(x[0]) + '"><span>' + esc(x[1]) + '</span><b>' + esc(x[2]) + '</b></button>';
     }).join("");
-    host.querySelectorAll("[data-pms143-page]").forEach(btn => {
-      btn.onclick = () => open(btn.getAttribute("data-pms143-page"));
-    });
+    if (host.dataset.pms143Html !== nextHtml) {
+      host.innerHTML = nextHtml;
+      host.dataset.pms143Html = nextHtml;
+    }
+    if (host.dataset.pms143Bound !== "1") {
+      host.dataset.pms143Bound = "1";
+      host.addEventListener("click", event => {
+        const btn = event.target && event.target.closest && event.target.closest("[data-pms143-page]");
+        if (!btn || !host.contains(btn)) return;
+        event.preventDefault();
+        open(btn.getAttribute("data-pms143-page"));
+      });
+    }
     const oldNav = document.getElementById("nav");
     if (oldNav) oldNav.setAttribute("data-pms143-hidden", "1");
   }
@@ -175,6 +185,8 @@
       style.id = "pms-v143-external-menu-style";
       document.head.appendChild(style);
     }
+    if (style.dataset.pms143Ready === "1") return;
+    style.dataset.pms143Ready = "1";
     style.textContent = `
       body{background:linear-gradient(120deg,rgba(95,143,109,.055),rgba(255,255,255,.42),rgba(189,122,120,.05)),${C.bg}!important;color:${C.text}!important;text-transform:none!important}
       .sidebar{background:linear-gradient(90deg,rgba(95,143,109,.15),rgba(255,255,255,.88) 50%,rgba(189,122,120,.12)),${C.bg}!important;color:${C.text}!important;border-color:${C.line}!important;overflow:visible!important}
@@ -215,7 +227,6 @@
     hook();
     draw();
     [100,300,800,1500,3000].forEach(ms => setTimeout(draw, ms));
-    setInterval(draw, 2000);
     window.PMS_V143_EXTERNAL_SIDEBAR_MENU_FINAL = {version: VERSION};
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", install, {once:true});

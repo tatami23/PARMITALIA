@@ -15,7 +15,7 @@
     {id:"approvals", label:"Autorizzazioni Admin", subtitle:"Blocchi procedura, richieste approvazione e controllo offerte", roles:["admin","assistant"], code:"APP", group:"Commerciale"},
     {id:"orders", label:"Ordini", subtitle:"Ordini cliente/fornitore e PDF puliti", roles:["admin","assistant","accountant"], code:"ORD", group:"Commerciale"},
     {id:"products", label:"Prodotti e articoli", subtitle:"Anagrafica articoli e multi-articolo", roles:["admin","assistant","accountant"], code:"PRD", group:"Commerciale"},
-    {id:"productForms", label:"Moduli prodotto", subtitle:"Modulo precompilato e import anagrafica prodotto", roles:["admin","assistant","agent"], code:"FRM", group:"Commerciale"},
+    {id:"productForms", label:"Moduli", subtitle:"Moduli raccolta per prodotti, anagrafiche, dipendenti estero e sezioni", roles:["admin","assistant","agent"], code:"FRM", group:"Commerciale"},
     {id:"supplierPriceConfirmations", label:"Listini e conferme fornitori", subtitle:"Conferme prezzi fluide multi-articolo", roles:["admin","assistant"], code:"LST", group:"Commerciale"},
     {id:"tenders", label:"Gare e richieste", subtitle:"Richieste commerciali e gare", roles:["admin","assistant"], code:"TEN", group:"Commerciale"},
     {id:"commercialBrokerage", label:"Brokeraggio commerciale", subtitle:"Pipeline broker e creazione offerte", roles:["admin","assistant"], code:"BRK", group:"Commerciale"},
@@ -23,6 +23,7 @@
     {id:"print", label:"Centro stampe", subtitle:"Print center e anteprime A4", roles:["admin","assistant","accountant"], code:"PRN", group:"Commerciale"},
     {id:"supplierGeoGroupage", label:"Geo fornitore", subtitle:"Rotte, rischi geopolitici e costi teorici", roles:["admin","assistant","accountant"], code:"GEO", group:"Operativo"},
     {id:"transportPrices", label:"Trasporti", subtitle:"Database prezzi trasporto e rotte", roles:["admin","assistant","accountant"], code:"TRP", group:"Operativo"},
+    {id:"companyFleet", label:"Flotta auto aziendale", subtitle:"Auto, ammortamenti, rate e subaffitti", roles:["admin","assistant","accountant"], code:"FLT", group:"Operativo"},
     {id:"packing", label:"Packing list", subtitle:"Imballi e packing", roles:["admin","assistant","accountant"], code:"PKG", group:"Operativo"},
     {id:"documents", label:"Archivio documenti", subtitle:"Documenti collegati a offerte, ordini e pratiche", roles:["admin","assistant","accountant"], code:"DOC", group:"Operativo"},
     {id:"accountant", label:"Commercialista", subtitle:"Fascicolo e invio a Sorina Popescu", roles:["admin","assistant","accountant"], code:"ACC", group:"Amministrazione"},
@@ -56,9 +57,9 @@
       #nav.pms100-nav{display:flex!important;flex-direction:column!important;gap:0!important;overflow-y:auto!important;overflow-x:hidden!important;padding-right:7px!important}
       #nav.pms100-nav .nav-group{display:flex!important;flex-direction:column!important;gap:4px!important;margin:0 0 13px!important;padding:0!important}
       #nav.pms100-nav .nav-group-title{padding:8px 10px 5px!important;color:rgba(255,255,255,.58)!important;font-size:11px!important;font-weight:900!important;text-transform:uppercase!important;letter-spacing:0!important}
-      #nav.pms100-nav .nav-button.compact{display:grid!important;grid-template-columns:36px minmax(0,1fr)!important;gap:10px!important;align-items:center!important;width:100%!important;min-height:46px!important;height:auto!important;padding:9px 10px!important;white-space:normal!important;overflow:visible!important;text-align:left!important;border-radius:6px!important}
+      #nav.pms100-nav .nav-button.compact{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:0!important;align-items:center!important;width:100%!important;min-height:46px!important;height:auto!important;padding:9px 10px!important;white-space:normal!important;overflow:visible!important;text-align:left!important;border-radius:6px!important}
       #nav.pms100-nav .nav-button.compact::before,#nav.pms100-nav .nav-button.compact::after{display:none!important;content:none!important}
-      #nav.pms100-nav .pms100-code{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:36px!important;min-width:36px!important;height:24px!important;border:1px solid rgba(255,255,255,.24)!important;border-radius:5px!important;color:rgba(255,255,255,.75)!important;font-family:Consolas,monospace!important;font-size:10px!important;font-weight:900!important}
+      #nav.pms100-nav .pms100-code{display:none!important;visibility:hidden!important;width:0!important;min-width:0!important;height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;opacity:0!important;font-size:0!important;line-height:0!important;color:transparent!important;background:transparent!important}
       #nav.pms100-nav .pms100-label{display:block!important;min-width:0!important;overflow-wrap:anywhere!important;line-height:1.25!important;color:inherit!important;font-size:13px!important;font-weight:800!important}
     `;
     document.head.appendChild(style);
@@ -109,7 +110,7 @@
         const button = document.createElement("button");
         button.className = "nav-button compact" + (window.current && current.page === m.id ? " active" : "");
         button.dataset.page = m.id;
-        button.innerHTML = '<span class="pms100-code">' + esc(info.code || "MOD") + '</span><span class="pms100-label">' + esc(info.label || m.label || m.id) + '</span>';
+        button.innerHTML = '<span class="pms100-label">' + esc(info.label || m.label || m.id) + '</span>';
         button.onclick = () => {
           if (typeof setPage === "function") setPage(m.id);
           else { current.page = m.id; if (typeof render === "function") render(); }
@@ -128,7 +129,7 @@
         const button = document.createElement("button");
         button.className = "nav-button compact" + (window.current && current.page === m.id ? " active" : "");
         button.dataset.page = m.id;
-        button.innerHTML = '<span class="pms100-code">' + esc(info.code || "MOD") + '</span><span class="pms100-label">' + esc(info.label || m.label || m.id) + '</span>';
+        button.innerHTML = '<span class="pms100-label">' + esc(info.label || m.label || m.id) + '</span>';
         button.onclick = () => setPage(m.id);
         wrap.appendChild(button);
       });
